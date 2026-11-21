@@ -820,10 +820,9 @@ map.attributionControl.setPrefix(false).addAttribution('Communes: <a href="https
 const renderer=L.canvas({padding:.3,tolerance:2});
 const OSMA='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
 const bases={
- 'Streets (CARTO Voyager)':L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:OSMA+' &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'}),
  'OpenStreetMap standard':L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:OSMA}),
  'Topographic (OpenTopoMap)':L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{subdomains:'abc',maxZoom:17,attribution:OSMA+', SRTM &copy; <a href="https://opentopomap.org" target="_blank" rel="noopener">OpenTopoMap</a> (CC-BY-SA)'})};
-bases['Streets (CARTO Voyager)'].addTo(map);
+bases['OpenStreetMap standard'].addTo(map);
 L.control.layers(bases,null,{position:'topright',collapsed:true}).addTo(map);
 map.createPane('roads');map.getPane('roads').style.zIndex=450;map.getPane('roads').style.pointerEvents='none';
 map.createPane('cities');map.getPane('cities').style.zIndex=460;map.getPane('cities').style.pointerEvents='none';
