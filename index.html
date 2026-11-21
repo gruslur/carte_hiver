@@ -778,7 +778,7 @@ label.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var
     <hr class="sep">
     <ul class="legend" id="legend2"></ul>
     <input type="checkbox" id="base" hidden>
-    <p class="foot">Click a commune to open its department's list on <a href="https://loi-montagne.net/departements" target="_blank" rel="noopener">loi-montagne.net</a>, scrolled to that commune. Commune list as published there, checked against prefecture arrêtés for 20 of 34 departments and corrected where they differ (November 2026); boundaries from IGN Admin Express via france-geojson; base maps © OpenStreetMap contributors, CARTO and OpenTopoMap. Use the layer button (top right) to switch base map.</p>
+    <p class="foot">Click a commune to open its department's list on <a href="https://loi-montagne.net/departements" target="_blank" rel="noopener">loi-montagne.net</a>, scrolled to that commune. Commune list as published there, checked against the official Sécurité routière list of prefectoral arrêtés (2022, plus Isère’s 2026 update) and corrected where they differ; boundaries from IGN Admin Express via france-geojson; base maps © OpenStreetMap contributors and OpenTopoMap. Use the layer button (top right) to switch base map.</p>
   </div>
   <button class="toggle" id="toggle" aria-expanded="true">Hide panel</button>
 </aside>
@@ -847,7 +847,7 @@ Promise.resolve(window.__TOPO__).then(topo=>{
   const index=[];let hl=null;
   const comLayer=L.geoJSON(communes,{style:cStyle,onEachFeature:(f,l)=>{
     const p=f.properties;index.push({p,l,k:fold(p.n)+' '+fold(p.l||'')});
-    l.bindTooltip(()=>esc(p.n)+(p.o===1?' · <b>equipment required</b>':p.o===2?' · <b>required on certain roads</b>':p.x?' · not in the prefecture’s list':' · not on the list'),{className:'tip',sticky:true});
+    l.bindTooltip(()=>esc(p.n)+(p.o===1?' · <b>equipment required</b>':p.o===2?' · <b>required on part of the commune</b>':p.x?' · not in the prefecture’s list':' · not on the list'),{className:'tip',sticky:true});
     l.on('click',e=>openPopup(p,l,e.latlng));
   }}).addTo(map);
   // department outlines drawn above communes
@@ -862,10 +862,10 @@ Promise.resolve(window.__TOPO__).then(topo=>{
     const depSlug=p.s||CODE2SLUG[p.d];const depName=depSlug?DEPS[depSlug]:null;
     let h='<div class="pp"><h3>'+esc(p.n)+'</h3><div class="dep">'+(depName?esc(depName)+' ('+esc(p.d)+')':'Dept '+esc(p.d))+(p.o&&slugMassif[p.s]?' · '+MASSIF_NAME[slugMassif[p.s]]:'')+'</div>';
     if(p.o){h+=(p.o===1?'<span class="chip yes">Winter equipment required</span><div>Chains or snow socks in the car, or four winter tyres fitted, from 1 November to 31 March.</div>'
-        :'<span class="chip yes">Required on certain roads</span><div>The Isère prefecture applies the obligation only on certain roads in this commune, from 1 November to 31 March.</div>')
+        :'<span class="chip yes">Required on part of the commune</span><div>The prefecture applies the obligation only on part of this commune, usually certain roads, from 1 November to 31 March. Check the prefectoral arrêté for the exact roads.</div>')
       +'<a class="go" href="'+esc(pageUrl(p))+'" target="_blank" rel="noopener">Open on loi-montagne.net ↗</a>'
       +(p.nw?'<div class="small">Added by prefectoral arrêté of 12 January 2026; not yet on loi-montagne.net.</div>':p.l?'<div class="small">Listed as “'+esc(p.l)+'”'+(p.p?' · '+esc(p.p):'')+'</div>':'');}
-    else if(p.x){h+='<span class="chip no">Not in the official list</span><div>loi-montagne.net lists this commune, but the Puy-de-Dôme prefecture’s arrêté of October 2022 covers only 161 communes and does not include it.</div>'
+    else if(p.x){h+='<span class="chip no">Not in the official list</span><div>loi-montagne.net lists this commune, but the official list from the prefecture (published by Sécurité routière) does not include it.</div>'
       +'<a class="go" href="'+esc(pageUrl(p))+'" target="_blank" rel="noopener">Open on loi-montagne.net ↗</a>';}
     else{h+='<span class="chip no">Not on the list</span><div>No winter equipment obligation for this commune.</div>'+(depSlug?'<a class="go" href="'+SITE+depSlug+'" target="_blank" rel="noopener">See '+esc(depName)+' list ↗</a>':'');}
     h+='</div>';
@@ -915,8 +915,8 @@ Promise.resolve(window.__TOPO__).then(topo=>{
   const total=Object.values(counts).reduce((a,b)=>a+b,0);
   lg.insertAdjacentHTML('beforeend','<li style="font-weight:600">Total communes<span class="n">'+total.toLocaleString('en')+'</span></li>');
   document.getElementById('legend2').innerHTML=
-    '<li><span class="sw" style="background:transparent;border:1.5px dashed var(--alpes)"></span>Only on certain roads (Isère)<span class="n">'+communes.features.filter(f=>f.properties.o===2).length+'</span></li>'
-   +'<li><span class="sw" style="background:var(--nonlist);border:1.5px dashed var(--accent)"></span>On loi-montagne.net but not in the prefecture’s list (Puy-de-Dôme)<span class="n">'+communes.features.filter(f=>f.properties.x).length+'</span></li>'
+    '<li><span class="sw" style="background:transparent;border:1.5px dashed var(--alpes)"></span>Only on part of the commune (certain roads)<span class="n">'+communes.features.filter(f=>f.properties.o===2).length+'</span></li>'
+   +'<li><span class="sw" style="background:var(--nonlist);border:1.5px dashed var(--accent)"></span>On loi-montagne.net but not in the official list<span class="n">'+communes.features.filter(f=>f.properties.x).length+'</span></li>'
    +'<li><span class="sw" style="background:transparent;border-color:var(--dep-line)"></span>Other communes in those 34 departments (outline only)</li>'
    +'<li><span class="sw" style="background:var(--none-ob)"></span>Department consulted, no obligation (14)</li>'
    +'<li><span class="sw" style="background:transparent;border-color:var(--dep-line)"></span>Other departments: no obligation</li>';
